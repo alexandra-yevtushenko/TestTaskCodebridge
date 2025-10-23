@@ -1,3 +1,7 @@
+using Microsoft.EntityFrameworkCore;
+using TestTaskCodebridge.DataAccess;
+using TestTaskCodebridge.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -6,6 +10,11 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddDbContext<DogsDbContext>(
+        options => options.UseSqlServer(builder.Configuration["DbConnectionString"]));
+
+builder.Services.AddScoped<DogsService>();
 
 var app = builder.Build();
 
