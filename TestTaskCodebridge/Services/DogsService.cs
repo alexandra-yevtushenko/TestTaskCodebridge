@@ -4,6 +4,7 @@ using System;
 using TestTaskCodebridge.DataAccess;
 using TestTaskCodebridge.DataAccess.Entitites;
 using TestTaskCodebridge.DTOs;
+using TestTaskCodebridge.Exceptions;
 
 namespace TestTaskCodebridge.Services
 {

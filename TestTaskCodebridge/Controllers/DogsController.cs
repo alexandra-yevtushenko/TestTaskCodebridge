@@ -19,7 +19,7 @@ namespace TestTaskCodebridge.Controllers
         [HttpGet("ping")]
         public IActionResult GetPing()
         {
-            return Ok();
+            return Ok("\"Dogshouseservice.Version1.0.1\"");
         }
 
 
