@@ -13,11 +13,11 @@ using Xunit;
 
 namespace TestTaskCodebrisge.Tests
 {
-    public class DogsControllerTests
+    public class DogsServiceTests
     {
         public readonly DogsService _service;
         public readonly DbContextOptions<DogsDbContext> _options;
-        public DogsControllerTests() 
+        public DogsServiceTests() 
         {
             _options = new DbContextOptionsBuilder<DogsDbContext>()
                     .UseInMemoryDatabase("DogsDbTests")
@@ -34,6 +34,7 @@ namespace TestTaskCodebrisge.Tests
                 new DogEntity { Name = "Rocky", Color = "black", TailLength = 12, Weight = 22 },
                 new DogEntity { Name = "Luna", Color = "gray", TailLength = 8, Weight = 16 }
             );
+
             await context.SaveChangesAsync();
         }
 
