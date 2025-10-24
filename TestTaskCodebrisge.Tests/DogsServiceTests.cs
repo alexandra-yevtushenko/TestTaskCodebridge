@@ -170,9 +170,5 @@ namespace TestTaskCodebrisge.Tests
             await Assert.ThrowsAsync<IncorrectObjectParameterException>(async () => await service.CreateNewDogAsync(duplicateDog));
         }
 
-
-
-
-
     }
 }
