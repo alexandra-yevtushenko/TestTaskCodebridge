@@ -24,7 +24,7 @@ namespace TestTaskCodebridge.Controllers
 
 
         [HttpGet("dogs")]
-        public async Task<ActionResult<IEnumerable<DisplayDogDTO>>> GetAllDogs([FromQuery] string attribute = "name", 
+        public async Task<IActionResult> GetAllDogs([FromQuery] string attribute = "name", 
                                                     [FromQuery] string order = "asc", 
                                                     [FromQuery] int pageNumber = 1, 
                                                     [FromQuery] int pageSize = 10)
@@ -34,7 +34,7 @@ namespace TestTaskCodebridge.Controllers
 
 
         [HttpPost("dog")]
-        public async Task<ActionResult<DisplayDogDTO>> AddNewDog(CreateDogDTO createDogDTO)
+        public async Task<IActionResult> AddNewDog(CreateDogDTO createDogDTO)
         {
             return Ok(await _dogsService.CreateNewDogAsync(createDogDTO));
         }

@@ -9,5 +9,11 @@ namespace TestTaskCodebridge.DataAccess
 
         public DbSet<DogEntity> Dogs { get; set; }
 
+        protected override void OnConfiguring(
+        DbContextOptionsBuilder optionsBuilder)
+        {
+            //optionsBuilder.UseInMemoryDatabase("DogsDbTests");
+        }
+
     }
 }
