@@ -164,9 +164,5 @@ namespace TestTaskCodebrisge.Tests
             Assert.ThrowsAsync<Exception>(async () => await service.CreateNewDogAsync(duplicateDog));
         }
 
-
-
-
-
     }
 }
