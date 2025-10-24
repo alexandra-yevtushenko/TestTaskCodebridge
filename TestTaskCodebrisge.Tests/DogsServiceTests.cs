@@ -8,6 +8,7 @@ using TestTaskCodebridge.Controllers;
 using TestTaskCodebridge.DataAccess;
 using TestTaskCodebridge.DataAccess.Entitites;
 using TestTaskCodebridge.DTOs;
+using TestTaskCodebridge.Exceptions;
 using TestTaskCodebridge.Services;
 using Xunit;
 
@@ -15,9 +16,10 @@ namespace TestTaskCodebrisge.Tests
 {
     public class DogsServiceTests
     {
-        public readonly DogsService _service;
-        public readonly DbContextOptions<DogsDbContext> _options;
-        public DogsServiceTests() 
+        private DogsService _service;
+        private DbContextOptions<DogsDbContext> _options;
+        private DogsDbContext _context;
+        public DogsServiceTests()
         {
             _options = new DbContextOptionsBuilder<DogsDbContext>()
                     .UseInMemoryDatabase("DogsDbTests")
@@ -42,10 +44,10 @@ namespace TestTaskCodebrisge.Tests
         [Fact]
         public async Task GetAllDogs_ReturnsCorrectPagination_1_5()
         {
-            DogsDbContext _context = new DogsDbContext(_options);
+            _context = new DogsDbContext(_options);
             await AddDogsAsync(_context);
 
-            DogsService _service = new DogsService(_context);
+            _service = new DogsService(_context);
 
             var result = await _service.GetAllDogsAsync("name", "asc", 1, 5);
             
@@ -57,10 +59,10 @@ namespace TestTaskCodebrisge.Tests
         [Fact]
         public async Task GetAllDogs_ReturnsCorrectSorting_weight_desc()
         {
-            DogsDbContext _context = new DogsDbContext(_options);
+            _context = new DogsDbContext(_options);
             await AddDogsAsync(_context);
 
-            DogsService _service = new DogsService(_context);
+            _service = new DogsService(_context);
 
             var result = await _service.GetAllDogsAsync("weight", "desc", 1, 10);
 
@@ -73,10 +75,10 @@ namespace TestTaskCodebrisge.Tests
         [Fact]
         public async Task GetAllDogs_ReturnsExpectedDogsList()
         {
-            DogsDbContext _context = new DogsDbContext(_options);
+            _context = new DogsDbContext(_options);
             await AddDogsAsync(_context);
 
-            DogsService _service = new DogsService(_context);
+            _service = new DogsService(_context);
 
             var expectedDogs = new[]
             {
@@ -88,8 +90,7 @@ namespace TestTaskCodebrisge.Tests
                 new DogEntity { Name = "Rocky", Color = "black", TailLength = 12, Weight = 22 }
             };
 
-            var result = await _service.GetAllDogsAsync("name", "asc", 1, 10);
-            var resultList = result.ToList();
+            var resultList = (await _service.GetAllDogsAsync("name", "asc", 1, 10)).ToList();
 
             Assert.Equal(expectedDogs.Length, resultList.Count);
 
@@ -105,16 +106,21 @@ namespace TestTaskCodebrisge.Tests
         [Fact]
         public async void GetAllDogs_ReturnsCorrectPagination_1_0()
         {
-            Assert.ThrowsAsync<Exception>(async () => await _service.GetAllDogsAsync("name", "asc", 1, 0));
+            _context = new DogsDbContext(_options);
+            await AddDogsAsync(_context);
+
+            _service = new DogsService(_context);
+
+            await Assert.ThrowsAsync<IncorrectQueryArgumentException>(async () => await _service.GetAllDogsAsync("name", "asc", 1, 0));
         }
 
         [Fact]
         public async Task CreateNewDogAsync_ReturnsCorrectDisplayDogDTO()
         {
-            DogsDbContext _context = new DogsDbContext(_options);
+            _context = new DogsDbContext(_options);
             await AddDogsAsync(_context);
 
-            DogsService _service = new DogsService(_context);
+            _service = new DogsService(_context);
 
             var newDog = new CreateDogDTO
             {
@@ -136,10 +142,10 @@ namespace TestTaskCodebrisge.Tests
         [Fact]
         public async Task CreateNewDogAsync_ThrowsExceptionWhenNameAlreadyExists()
         {
-            DogsDbContext _context = new DogsDbContext(_options);
+            _context = new DogsDbContext(_options);
             await AddDogsAsync(_context);
 
-            DogsService _service = new DogsService(_context);
+            _service = new DogsService(_context);
 
             _context.Dogs.Add(new DogEntity
             {
@@ -161,7 +167,7 @@ namespace TestTaskCodebrisge.Tests
                 Weight = 18
             };
 
-            Assert.ThrowsAsync<Exception>(async () => await service.CreateNewDogAsync(duplicateDog));
+            await Assert.ThrowsAsync<IncorrectObjectParameterException>(async () => await service.CreateNewDogAsync(duplicateDog));
         }
 
 
