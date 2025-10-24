@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System;
+using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using TestTaskCodebridge.DataAccess;
 using TestTaskCodebridge.DataAccess.Entitites;
 using TestTaskCodebridge.DTOs;
@@ -26,6 +28,9 @@ namespace TestTaskCodebridge.Services
             return await _context
                 .Dogs
                 .AsNoTracking()
+                .OrderByWithDirection(GetFieldToSortByExpression(attribute), order)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
                 .Select(d => new DisplayDogDTO 
                 {
                     Name = d.Name, 
@@ -33,10 +38,20 @@ namespace TestTaskCodebridge.Services
                     TailLength = d.TailLength, 
                     Weight = d.Weight 
                 })
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                //.OrderBy(d => )
                 .ToListAsync();
+        }
+
+
+        private Expression<Func<DogEntity, object>> GetFieldToSortByExpression(string fieldName)
+        {
+            return fieldName switch
+            {
+                "name" => dog => dog.Name,
+                "color" => dog => dog.Color,
+                "tail_lengh" => dog => dog.TailLength,
+                "weight" => dog => dog.Weight,
+                _ => throw new IncorrectQueryArgumentException("GetAllDogs: Not a valid field to sort by!")
+            };
         }
 
         private void ValidateQueryParametersGetAllDogs(string attribute,
